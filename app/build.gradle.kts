@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt)
-    kotlin("kapt")
+    alias(libs.plugins.ksp.plugin)
 }
 
 android {
@@ -87,11 +87,9 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.navigation)
-    kapt(libs.dagger.hilt.compiler)
-    kapt(libs.hilt.compiler)
-
-}
-
-kapt {
-   correctErrorTypes = true
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    ksp(libs.dagger.hilt.compiler)
+    ksp(libs.hilt.compiler)
 }

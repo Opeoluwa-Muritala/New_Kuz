@@ -1,8 +1,10 @@
 package com.example.new_kuz.domain.modules
 
+import androidx.room.Entity
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Entity
 data class Users(
     val uid: String = "",
     val name: String = "",

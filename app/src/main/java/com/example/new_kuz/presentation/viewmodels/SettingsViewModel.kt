@@ -1,59 +1,64 @@
 package com.example.new_kuz.presentation.viewmodels
 
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.new_kuz.domain.modules.Users
+import com.example.new_kuz.domain.repository.UserRepository
 import com.example.new_kuz.presentation.events.SettingsEvent
 import com.example.new_kuz.presentation.states.SettingsState
-import com.example.new_kuz.domain.repository.UserInterface
+import com.example.new_kuz.util.RequestState
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state = _state.asStateFlow()
 
     val currentUser = auth.currentUser
 
+    val userdata = userRepository.getUser("${currentUser?.uid}")
+
     init {
         getCurrentUserDetails()
     }
 
     private fun getCurrentUserDetails() {
-        db.collection("Users").document("${currentUser?.uid}").get()
-            .addOnSuccessListener {documentSnapshots ->
-                val userDetails = documentSnapshots.toObject(Users::class.java)
-                if (userDetails != null){
+        viewModelScope.launch {
+            var users: Users
+            userdata.collect { userDetails ->
+                if (userDetails.isSuccess()) {
+                    users = userDetails.getSuccessData()
                     _state.update {
                         it.copy(
-                            name = userDetails.name,
-                            bio = userDetails.bio ?: "",
-                            image = userDetails.imageUrl?.toUri(),
-                            selectedGender = userDetails.gender,
-                            date_of_birth = userDetails.dateOfBirth,
+                            name = users.name ?: "",
+                            bio = users.bio ?: "",
+                            image = users.imageUrl?.toUri(),
+                            selectedGender = users.gender,
+                            date_of_birth = users.dateOfBirth,
                         )
                     }
                 }
-
             }
+        }
     }
 
     fun onEvents(event: SettingsEvent) {

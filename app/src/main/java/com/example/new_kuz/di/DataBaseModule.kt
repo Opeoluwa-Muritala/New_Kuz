@@ -1,7 +1,8 @@
-package com.example.new_kuz.database
+package com.example.new_kuz.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.new_kuz.database.AppDataBase
 import com.example.new_kuz.database.dao.MessageDao
 import com.example.new_kuz.database.dao.UserDao
 import dagger.Module
@@ -23,7 +24,7 @@ object DataBaseModule {
             .databaseBuilder(
                 application,
                 AppDataBase::class.java,
-                "scholarnave.db"
+                "KUZ_database.db"
             )
             .build()
     }

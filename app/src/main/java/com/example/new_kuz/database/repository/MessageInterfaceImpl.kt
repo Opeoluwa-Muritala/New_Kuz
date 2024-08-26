@@ -1,40 +1,34 @@
 package com.example.new_kuz.database.repository
 
 import com.example.new_kuz.domain.modules.Messages
-import com.example.new_kuz.domain.repository.MessageInterface
+import com.example.new_kuz.domain.repository.MessageRepository
+import com.example.new_kuz.util.RequestState
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObjects
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class MessageInterfaceImpl @Inject constructor(
+class MessageRepositoryImpl @Inject constructor(
     private val storage: FirebaseStorage,
     private val db: FirebaseFirestore
-): MessageInterface {
-    override fun allMessages(): List<Messages> {
-        var list: List<Messages> = mutableListOf<Messages>()
-        db.collection("Messages").addSnapshotListener { value, error ->
-            if (error != null) {
-                return@addSnapshotListener
-            }
-            if (value != null){
-                list = value.toObjects()
-            }
-        }
-        return list
+): MessageRepository {
+    override fun allMessages(): Flow<RequestState<List<Messages>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun myMessages(uid: String): List<Messages> {
-        return allMessages().filter { it.sentby == uid || it.sentto == uid}
+    override fun myMessages(uid: String): Flow<RequestState<List<Messages>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun getChat(senderUid: String, recieverUid: String): List<Messages> {
-        return myMessages(senderUid).filter { it.sentby == senderUid && it.sentto == recieverUid }
+    override fun getChat(
+        senderUid: String,
+        recieverUid: String
+    ): Flow<RequestState<List<Messages>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun addNewMessage(messages: Messages) {
-        db.collection("Messages").document().set(messages)
+    override fun addNewMessage(messages: Messages): Flow<RequestState<String>> {
+        TODO("Not yet implemented")
     }
-
 }

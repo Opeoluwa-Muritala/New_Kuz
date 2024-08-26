@@ -8,13 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.new_kuz.domain.modules.inAppNav
+import com.example.new_kuz.presentation.viewmodels.DataViewmodel
 
 @Composable
 fun Home( navController: NavHostController = rememberNavController()) {
+        val viewmodel: DataViewmodel = hiltViewModel()
+        viewmodel.currentUser
         val screens = listOf(
                 inAppNav.home.route,
                 inAppNav.chat.route,
@@ -30,9 +34,4 @@ fun Home( navController: NavHostController = rememberNavController()) {
         } else {
                 AppNav(navController)
         }
-
-
-
-
-
 }

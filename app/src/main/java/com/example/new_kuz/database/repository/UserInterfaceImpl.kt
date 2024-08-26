@@ -1,65 +1,73 @@
 package com.example.new_kuz.database.repository
 
-import androidx.compose.runtime.mutableStateOf
+import com.example.new_kuz.database.dao.UserDao
 import com.example.new_kuz.domain.modules.Users
-import com.example.new_kuz.domain.repository.UserInterface
+import com.example.new_kuz.domain.repository.UserRepository
+import com.example.new_kuz.util.RequestState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
-import com.google.firebase.firestore.toObjects
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class UserInterfaceImpl @Inject constructor(
+class UserRepositoryImpl @Inject constructor(
     private val db: FirebaseFirestore,
     private val storage: FirebaseStorage,
-    private val auth: FirebaseAuth
-):UserInterface {
-    override fun getUser(uid: String): Users? {
-        var document: Users? = mutableStateOf<Users?>(null).value
-        db.collection("Users")
-            .document(uid)
-            .get().addOnFailureListener {
-                return@addOnFailureListener
+    private val auth: FirebaseAuth,
+    private val userDao: UserDao
+): UserRepository {
+
+
+    override fun getUser(uid: String): Flow<RequestState<Users>> {
+        return flow {
+            emit(RequestState.Loading)
+            try {
+                val user = userDao.getUserData(uid)
+                emit(RequestState.Success(user))
+            } catch (e:Exception){
+                emit(RequestState.Error(e.localizedMessage?.toString() ?: ""))
             }
-            .addOnSuccessListener {querySnapshot ->
-                 document = querySnapshot.toObject()
+
+        }
+    }
+
+    override fun getAllUsers(): Flow<RequestState<List<Users>>> {
+        return flow {
+            emit(RequestState.Loading)
+
+            try {
+                val users = userDao.getAllUsers()
+                emit(RequestState.Success(users))
+            } catch (e: Exception) {
+                emit(RequestState.Error(e.localizedMessage?.toString() ?: ""))
             }
-        return document
+
+        }
     }
 
-    override fun getAllUsers(): List<Users> {
-        var documents: List<Users> = mutableListOf<Users>()
-        db.collection("Users")
-            .addSnapshotListener { value, error ->
-                if (error != null){
-                    return@addSnapshotListener
-                }
-                if (value != null){
-                    documents = value.toObjects()
-                }
-            }
-        return documents
+    override fun getArchived(users: List<String>): Flow<RequestState<List<Users>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun getArchived(users: List<String>): List<Users> {
-        return getAllUsers().filter { users.contains(it.uid) }
+    override fun getBlocked(users: List<String>): Flow<RequestState<List<Users>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun getBlocked(users: List<String>): List<Users> {
-        return getAllUsers().filter { users.contains(it.uid) }
+    override fun getConnected(users: List<String>): Flow<RequestState<List<Users>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun getConnected(users: List<String>): List<Users> {
-        return getAllUsers().filter { users.contains(it.uid) }
+    override fun getNotConnected(users: List<String>): Flow<RequestState<List<Users>>> {
+        TODO("Not yet implemented")
     }
 
-    override fun getNotConnected(users: List<String>): List<Users> {
-        return getAllUsers().filter { users.contains(it.uid) }
+    override fun updateUser(user: Users): Flow<RequestState<String>> {
+        TODO("Not yet implemented")
     }
-
-    override fun updateUser(user: Users) {
-        db.collection("Users").document(user.uid).set(user)
-    }
-
 }

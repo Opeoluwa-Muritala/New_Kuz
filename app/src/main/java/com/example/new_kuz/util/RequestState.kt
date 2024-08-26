@@ -1,5 +1,10 @@
 package com.example.new_kuz.util
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import java.lang.Error
@@ -49,19 +54,28 @@ sealed class RequestState<out T> {
         onSuccess: @Composable () -> Unit,
         onError: @Composable () -> Unit
     ) {
-        when (this) {
-            Idle -> {
-                onIdle?.invoke()
+        AnimatedContent(
+            targetState = this,
+            label = "Content Animation",
+            transitionSpec = {
+                fadeIn(tween(300)) togetherWith fadeOut(tween(300))
             }
-            Loading -> {
-                onLoading()
-            }
-            is Success -> {
-                onSuccess()
-            }
-            is Error -> {
-                onError()
+        ) { state->
+            when (state) {
+                Idle -> {
+                    onIdle?.invoke()
+                }
+                Loading -> {
+                    onLoading()
+                }
+                is Success -> {
+                    onSuccess()
+                }
+                is Error -> {
+                    onError()
+                }
             }
         }
+
     }
 }

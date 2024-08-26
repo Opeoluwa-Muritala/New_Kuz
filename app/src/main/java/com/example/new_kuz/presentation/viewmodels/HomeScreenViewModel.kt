@@ -6,6 +6,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.new_kuz.domain.modules.Users
+import com.example.new_kuz.domain.repository.UserRepository
 import com.example.new_kuz.presentation.events.HomeScreenEvent
 import com.example.new_kuz.presentation.states.HomeScreenState
 import com.example.new_kuz.util.RequestState
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val userRepository: UserRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state = _state.asStateFlow()

@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.Card
@@ -59,6 +60,7 @@ import com.example.new_kuz.presentation.viewmodels.SettingsViewModel
 import com.example.new_kuz.presentation.screens.appscreens.components.AppDatePicker
 import com.example.new_kuz.presentation.screens.components.LabelledTextField
 import com.example.new_kuz.presentation.screens.components.appField
+import com.example.new_kuz.util.RequestState
 import java.time.Instant
 
 
@@ -66,12 +68,16 @@ import java.time.Instant
 fun SettingsNavigation(navController: NavController){
     val viewModel: SettingsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
+    val data = viewModel.userdata.collectAsState(initial = RequestState.Idle)
+
     val photopickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             viewModel.onEvents(SettingsEvent.onSelectImage(it))
         }
     )
+
+
     settingsUi(
         state = state,
         onEvent = { settingsEvent ->
@@ -206,7 +212,7 @@ private fun AboutKuzButton(
         ) {
             Text(text = "About Kuz", color = Color.Black)
             Spacer(modifier = Modifier.weight(1f))
-            Icon(imageVector = Icons.Outlined.KeyboardArrowRight,
+            Icon(imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = "About")
         }
     }

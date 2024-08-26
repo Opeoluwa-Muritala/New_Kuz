@@ -3,8 +3,11 @@ package com.example.new_kuz.presentation.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.new_kuz.database.dao.MessageDao
+import com.example.new_kuz.database.dao.UserDao
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.Users
+import com.example.new_kuz.domain.repository.UserRepository
 import com.example.new_kuz.presentation.events.ChatScreenEvent
 import com.example.new_kuz.presentation.states.ChatScreenState
 import com.example.new_kuz.presentation.states.HomeScreenState
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +28,7 @@ import javax.inject.Inject
 class ChatScreenViewModel @Inject constructor(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
+    private val userRepository: UserRepository
 ): ViewModel() {
     val currentUser = auth.currentUser
 
@@ -36,45 +41,26 @@ class ChatScreenViewModel @Inject constructor(
 
     init {
         getAllUserDetails()
-//        getCurrentUserDetails()
-//        getAllContacts()
+
         getMessages()
     }
 
     private fun getAllUserDetails() {
-        val users = mutableListOf<Users>()
-        db.collection("Users").document("${currentUser?.uid}").get()
-            .addOnSuccessListener {documentSnapshots ->
-                val userDetails = documentSnapshots.toObject(Users::class.java)
-                _state.update {
-                    it.copy(
-                        currentUser = userDetails!!,
-                        connected = userDetails.connectedUsers
-                    )
-                }
-                db.collection("Users").addSnapshotListener { value, error ->
-                    if (error != null) {
-                        viewModelScope.launch {
-                            _requestState.emit(RequestState.Error(error.localizedMessage.orEmpty()))
-                        }
-                        return@addSnapshotListener
-                    }
-                    if (value != null) {
-                        for (document in value) {
-                            if (document.toObject(Users::class.java).uid != currentUser?.uid){
-                                users.add(document.toObject(Users::class.java))
-                            }
-                        }
-                        _state.update {
-                            it.copy(
-                                chats = users.toList().filter {user ->
-                                    userDetails?.connectedUsers!!.contains(user.uid)
-                                }
-                            )
-                        }
+
+        viewModelScope.launch {
+            userRepository.getUser("${currentUser?.uid}")
+            userRepository.getAllUsers().collectLatest {request->
+                if (request.isSuccess()){
+                    _state.update {
+                        it.copy(
+                            chats = request.getSuccessDataOrNull() ?: emptyList()
+                        )
                     }
                 }
             }
+        }
+
+
     }
 
     fun onEvent(event: ChatScreenEvent){
@@ -94,27 +80,7 @@ class ChatScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getMessages(){
-        val messages = mutableListOf<Messages>()
+    private fun getMessages() {
 
-        db.collection("Messages").addSnapshotListener { value, error ->
-            if (error != null) {
-                return@addSnapshotListener
-            }
-            if (value != null) {
-                for (document in value) {
-                    messages.add(document.toObject(Messages::class.java))
-
-                }
-                _state.update {
-                    it.copy(
-                        messages = messages.toList().filter {message ->
-                            message.sentto == currentUser?.uid || message.sentby == currentUser?.uid
-                        }
-                    )
-                }
-                messages.clear()
-            }
-        }
     }
 }

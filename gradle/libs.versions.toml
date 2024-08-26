@@ -74,3 +74,5 @@ google-gms-google-services = { id = "com.google.gms.google-services", version.re
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt"}
 ksp-plugin = { id = "com.google.devtools.ksp", version .ref = "kspVersion"}
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+

@@ -32,6 +32,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,78 +52,83 @@ import com.example.new_kuz.presentation.events.ContactCardEvent
 import com.example.new_kuz.presentation.states.ContactCardState
 import com.example.new_kuz.presentation.viewmodels.SignInViewModel
 import com.example.new_kuz.navigation.User
+import com.example.new_kuz.presentation.viewmodels.ContactCardViewModel
 
 @Composable
 fun ContactNavigation(navController: NavController, user: Users){
     //Create ViewModel And Add Functionality
+    val viewModel: ContactCardViewModel = hiltViewModel()
+    val state = viewModel.state.collectAsState().value
     contactCard(
-        state = ContactCardState(),
+        state = state,
         user = user,
         onEvent = { contactCardEvent ->
             when(contactCardEvent) {
                 ContactCardEvent.onBackClick -> {
                     navController.navigateUp()
                 }
-                else -> contactCardEvent
+                else -> viewModel.onEvents(contactCardEvent)
             }
 
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun contactCard(
     user: Users? = null,
     state: ContactCardState,
     onEvent: (ContactCardEvent) -> Unit
 ) {
-    val viewModel: SignInViewModel = hiltViewModel()
     Scaffold(
         topBar = {
             AppBar(onBackClick = { onEvent(ContactCardEvent.onBackClick) })
         },
         containerColor = MaterialTheme.colorScheme.background,
         ) {
-        LazyColumn {
+        LazyColumn(
+            Modifier.padding(it)
+        ) {
             item { Spacer(modifier = Modifier.height(10.dp)) }
             item {
                 Column(
-                    Modifier
-                        .padding(it)
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     UserDetails(
                         image = user?.imageUrl ?: "",
                         name = user?.name ?: "User",
-                        lastSeen = state.lastSeen
+                        lastSeen = state.lastSeen,
+                        currentUsers = state.currentUser,
+                        otherUsers = user!!
                     )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Gender(gender = user?.gender ?: "e.g Male")
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Biography(bio = user?.bio ?: "")
-                    }
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        ProfileButtonCards(
-                            onCardClick = {onEvent(ContactCardEvent.blockContact)}
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        ProfileButtonCards(
-                            text = "Archive Chat",
-                            onCardClick = {onEvent(ContactCardEvent.archiveContact)}
-                        )
-                    }
-
                 }
             }
-            item { Spacer(modifier = Modifier.height(10.dp)) }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Gender(gender = user?.gender ?: "e.g Male")
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Biography(bio = user?.bio ?: "")
+                }
+            }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    ProfileButtonCards(
+                        onCardClick = {onEvent(ContactCardEvent.blockContact)}
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    ProfileButtonCards(
+                        text = "Archive Chat",
+                        onCardClick = {onEvent(ContactCardEvent.archiveContact)}
+                    )
+                }
+            }
         }
 
     }
@@ -158,6 +164,8 @@ private fun UserDetails(
     image: String,
     name: String ,
     lastSeen: String = "last seen 3 minutes ago",
+    currentUsers: Users,
+    otherUsers: Users
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,) {
         AsyncImage(
@@ -199,24 +207,46 @@ private fun UserDetails(
                     .fillMaxSize()
                     .padding(10.dp)
             ) {
-                Box(
-                    Modifier
-                        .clip(RoundedCornerShape(50))
-                        .background(Color.Green)
-                        .size(90.dp, 40.dp)
-                        .padding(10.dp)
-                ) {
-                    Text(
-                        text = "Connected",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                if (currentUsers.connectedUsers.contains(otherUsers.uid) && otherUsers.connectedUsers.contains(currentUsers.uid)) {
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.Green)
+                            .height(IntrinsicSize.Max)
+                            .width(IntrinsicSize.Max)
+                            .padding(10.dp)
+                    ) {
+
+                        Text(
+                            text = "Connected",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                } else {
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.Gray)
+                            .size(90.dp, 40.dp)
+                            .padding(10.dp)
+                            .height(IntrinsicSize.Max)
+                            .width(IntrinsicSize.Max)
+                    ) {
+
+                        Text(
+                            text = "Not Connected",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
                 }
-                Text(
-                    text = "Connected on 5th Dec, 2023",
-                    color = Color.Black
-                )
+//                Text(
+//                    text = "Connected on 5th Dec, 2023",
+//                    color = Color.Black
+//                )
             }
 
         }

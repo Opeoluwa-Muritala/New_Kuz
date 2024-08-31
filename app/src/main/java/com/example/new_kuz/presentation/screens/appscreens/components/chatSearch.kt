@@ -3,6 +3,7 @@ package com.example.new_kuz.presentation.screens.appscreens.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -57,24 +59,25 @@ fun roundedSearchBar(
         value = text,
         onValueChange = onTextChange,
         textStyle = LocalTextStyle.current.copy(
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center
+            fontSize = TextUnit.Unspecified,
+            textAlign = TextAlign.Unspecified
         ),
          placeholder =  {
-           Row(
-               Modifier.fillMaxWidth(),
-               horizontalArrangement = Arrangement.Center,
-               verticalAlignment = Alignment.CenterVertically
-           ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search"
-                )
-                Text("Search")
-            }
+
+             Row(
+                 Modifier.fillMaxWidth(.8f),
+                 verticalAlignment = Alignment.CenterVertically,
+                 horizontalArrangement = Arrangement.Center
+             ) {
+                 Icon(
+                     imageVector = Icons.Default.Search,
+                     contentDescription = "Search"
+                 )
+                 Text("Search KUZ")
+             }
+
         },
         shape = RoundedCornerShape(50),
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(2.dp).height(55.dp)
     )
 }

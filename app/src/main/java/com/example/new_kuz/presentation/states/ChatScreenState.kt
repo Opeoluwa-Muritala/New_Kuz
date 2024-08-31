@@ -8,5 +8,6 @@ data class ChatScreenState(
     val connected: List<String> = emptyList(),
     val query: String = "",
     val currentUser: Users = Users(),
-    val messages: List<Messages> = emptyList()
+    val messages: List<Messages> = emptyList(),
+    val archived: List<String> = emptyList()
 )

@@ -1,18 +1,26 @@
 package com.example.new_kuz.presentation.screens.appscreens.chat
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -30,10 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,6 +84,11 @@ fun ChatNavigation(
                     navController.navigate(message.createMessage(user.uid))
                     viewModel.onEvent(chatEvent)
                 }
+                is ChatScreenEvent.onArchiveClick -> {
+
+                    navController.navigate(inAppNav.archive.route)
+                    viewModel.onEvent(chatEvent)
+                }
                 is ChatScreenEvent.onQueryChange ->{
                     viewModel.onEvent(chatEvent)
                 }
@@ -80,7 +98,7 @@ fun ChatNavigation(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun chatUi(
     state: ChatScreenState,
@@ -109,16 +127,8 @@ private fun chatUi(
                 state = listState
             ) {
                 item {
-                    if (state.chats.isEmpty()) {
-                        Column(
-                            Modifier.fillMaxSize().padding(5.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Logo(color = MaterialTheme.colorScheme.primary, fontSize = 50)
-                            Text(text = "Thank you For Using Kuz. Please connect to more users.",
-                                textAlign = TextAlign.Center)
-                        }
+                    if (state.archived.isNotEmpty() and (state.archived.size > 1)){
+                        ArchivedChats(onClick = { onEvent(ChatScreenEvent.onArchiveClick) }, noArchivedUsers = state.archived.size)
                     }
                 }
                 items(state.chats) { users ->
@@ -134,7 +144,10 @@ private fun chatUi(
 
                     chatItem(
                         image = users.imageUrl ?: "",
-                        isActive = users.active,
+                        isActive = if (
+                            !users.connectedUsers.contains(state.currentUser.uid) &&
+                            state.connected.contains(users.uid)
+                        ) true else false,
                         time = lastMessages?.timeline ?: "",
                         chats = null,
                         lastMessage = lastMessages?.message ?: lastMessages?.images?.firstOrNull() ?: "",
@@ -145,6 +158,49 @@ private fun chatUi(
             }
         }
     }
+}
+
+@Composable
+private fun ArchivedChats(modifier: Modifier = Modifier, onClick: () -> Unit, noArchivedUsers: Int? = null) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
+            .padding(15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_archive_24),
+                    contentDescription = "Archived",
+                    tint = Color.White,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            Text(text = "Archive Chats", style = MaterialTheme.typography.bodyLarge,)
+            
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        noArchivedUsers?.let {
+            if (it > 1)Text(text = "$it Archived members",
+                style =MaterialTheme.typography.bodyMedium)
+            else Text(text = "$it Archived member", style =MaterialTheme.typography.bodyMedium)
+        }
+
+    }
+    HorizontalDivider(
+        thickness = Dp.Hairline,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -161,7 +217,6 @@ private fun ChatsScreenTopBar(
             Text(text = "Chats", fontSize = 50.sp, fontWeight = FontWeight.Bold)
         },
       title = {
-//            if (scrollBehavior.state.) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     roundedSearchBar(
                         text = search,
@@ -176,13 +231,5 @@ private fun ChatsScreenTopBar(
                     }
 //                }
             }
-//            else {
-//                IconButton(onClick = filter) {
-//                    Icon(
-//                        imageVector = Icons.Filled.Search,
-//                        contentDescription = "Filter"
-//                    )
-//                }
-//            }
         })
 }

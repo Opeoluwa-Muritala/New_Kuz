@@ -1,6 +1,5 @@
 package com.example.new_kuz.presentation.screens.appscreens.chat.messages
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +43,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -193,7 +191,6 @@ private fun messageUI(
     ) {paddingValues->
         LazyColumn(Modifier.padding(paddingValues),
             reverseLayout = true) {
-            Log.d("messages Composable", state.messages.toString())
 
             items(6){
                 if (state.messages.isEmpty()) {

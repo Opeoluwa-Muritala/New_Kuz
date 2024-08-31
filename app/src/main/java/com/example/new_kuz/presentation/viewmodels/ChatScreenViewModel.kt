@@ -1,39 +1,35 @@
 package com.example.new_kuz.presentation.viewmodels
 
-import android.util.Log
+
+import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.new_kuz.database.dao.MessageDao
-import com.example.new_kuz.database.dao.UserDao
-import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.Users
+import com.example.new_kuz.domain.repository.MessageRepository
 import com.example.new_kuz.domain.repository.UserRepository
 import com.example.new_kuz.presentation.events.ChatScreenEvent
 import com.example.new_kuz.presentation.states.ChatScreenState
-import com.example.new_kuz.presentation.states.HomeScreenState
 import com.example.new_kuz.util.RequestState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatScreenViewModel @Inject constructor(
-    private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val messageRepository: MessageRepository
 ): ViewModel() {
     val currentUser = auth.currentUser
-
-    private val _requestState = MutableSharedFlow<RequestState<String>>()
-    val requestState = _requestState.asSharedFlow()
 
     private val _state = MutableStateFlow(ChatScreenState())
     val state = _state.asStateFlow()
@@ -41,25 +37,56 @@ class ChatScreenViewModel @Inject constructor(
 
     init {
         getAllUserDetails()
-
         getMessages()
     }
 
     private fun getAllUserDetails() {
 
         viewModelScope.launch {
-            userRepository.getUser("${currentUser?.uid}")
-            userRepository.getAllUsers().collectLatest {request->
-                if (request.isSuccess()){
+            val allUsers = userRepository.getAllUsers()
+            userRepository.getUser("${currentUser?.uid}").collectLatest {request->
+                _state.update {
+                    it.copy(
+                        currentUser = request.getSuccessDataOrNull() ?: Users(),
+                        connected = request.getSuccessDataOrNull()?.connectedUsers ?: emptyList(),
+                        archived =  request.getSuccessDataOrNull()?.archivedUsers ?: emptyList()
+                    )
+                }
+            }
+            allUsers.collectLatest { request ->
+                if (request.isSuccess()) {
                     _state.update {
                         it.copy(
-                            chats = request.getSuccessDataOrNull() ?: emptyList()
+                            chats = request.getSuccessDataOrNull() ?: emptyList(),
                         )
                     }
+                } else if (request.isLoading()) {
+                    showSnackbar("Loading...", duration = SnackbarDuration.Short)
+                } else {
+                    showSnackbar(request.getErrorData())
                 }
             }
         }
 
+
+    }
+
+    private fun getMessages() {
+        viewModelScope.launch {
+            val messages = messageRepository.myMessages("${currentUser?.uid}")
+            messages.collectLatest {request ->
+                if (request.isSuccess()) {
+                    _state.update {
+                        it.copy(
+                            messages = request.getSuccessDataOrNull() ?: emptyList()
+                        )
+                    }
+                } else {
+                    showSnackbar(request.getErrorData())
+                }
+
+            }
+        }
 
     }
 
@@ -77,10 +104,9 @@ class ChatScreenViewModel @Inject constructor(
             }
 
             is ChatScreenEvent.onChatClick -> {}
+            is ChatScreenEvent.onArchiveClick -> {}
         }
     }
 
-    private fun getMessages() {
 
-    }
 }

@@ -1,6 +1,7 @@
 package com.example.new_kuz.presentation.viewmodels
 
 import android.net.Uri
+import androidx.compose.material3.SnackbarDuration
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import com.plcoding.globalsnackbarscompose.SnackbarAction
+import com.plcoding.globalsnackbarscompose.SnackbarController
+import com.plcoding.globalsnackbarscompose.SnackbarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,23 +47,27 @@ class SettingsViewModel @Inject constructor(
 
     private fun getCurrentUserDetails() {
         viewModelScope.launch {
-            var users: Users
+            var users: Users?
             userdata.collect { userDetails ->
                 if (userDetails.isSuccess()) {
-                    users = userDetails.getSuccessData()
+                    users = userDetails.getSuccessDataOrNull()
                     _state.update {
                         it.copy(
-                            name = users.name ?: "",
-                            bio = users.bio ?: "",
-                            image = users.imageUrl?.toUri(),
-                            selectedGender = users.gender,
-                            date_of_birth = users.dateOfBirth,
+                            users = users ?: Users(),
+                            name = users?.name ?: "",
+                            bio = users?.bio ?: "",
+                            image = users?.imageUrl?.toUri(),
+                            selectedGender = users?.gender ?: "",
+                            date_of_birth = users?.dateOfBirth ?: "",
                         )
                     }
+                } else {
+                    showSnackbar(userDetails.getErrorData())
                 }
             }
         }
     }
+
 
     fun onEvents(event: SettingsEvent) {
         when (event) {
@@ -122,54 +130,23 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun saveChanges() {
-        val state = state.value
-        uploadProfilephoto()
-        db.collection("Users").document("${currentUser?.uid}")
-            .update(
-                mapOf(
-                    "imageUrl" to state.image,
-                    "name" to state.name,
-                    "bio" to state.bio,
-                    "gender" to state.selectedGender,
-                    "dateOfBirth" to state.date_of_birth
+        viewModelScope.launch {
+            val state = state.value
+            userRepository.updateUser(
+                Users(
+                    name = state.name,
+                    bio = state.bio,
+                    dateOfBirth = state.date_of_birth,
+                    gender = state.selectedGender,
+                    archivedUsers = state.users.archivedUsers,
+                    connectedUsers = state.users.connectedUsers,
+                    blockedUsers = state.users.blockedUsers,
+                    uid = state.users.uid,
+                    active = state.users.active,
+                    imageUrl = if (state.image != null) state.image.toString() else state.users.imageUrl
                 )
             )
-    }
-
-    private fun uploadProfilephoto() {
-
-        state.value.image?.let {uri ->
-            val storageRef = storage.reference
-            val fileRef = storageRef.child("profile/${currentUser?.uid}.jpg")
-            val uploadTask = fileRef.putFile(uri)
-            val urlTask = uploadTask.continueWithTask(
-                Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
-                    task ->
-                    if (!task.isSuccessful){
-                        task.exception?.let {
-                            throw it
-                        }
-                    }
-                    return@Continuation fileRef.downloadUrl
-                }
-            )?.addOnCompleteListener {task ->
-                if (task.isSuccessful){
-                    val downloadUrl = task.result
-                    _state.update {
-                        it.copy(
-                            image = downloadUrl
-                        )
-                    }
-                }
-            }
-
-            uploadTask.addOnSuccessListener {  }
-            urlTask?.addOnSuccessListener {  }
-
         }
-
-
-
-
     }
+
 }

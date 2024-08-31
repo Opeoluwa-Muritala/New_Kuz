@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +47,6 @@ import com.example.new_kuz.domain.modules.inAppNav
 import com.example.new_kuz.presentation.events.HomeScreenEvent
 import com.example.new_kuz.presentation.screens.appscreens.components.connectItems
 import com.example.new_kuz.presentation.screens.appscreens.components.roundedSearchBar
-import com.example.new_kuz.presentation.screens.auth.components.Logo
 import com.example.new_kuz.presentation.states.HomeScreenState
 import com.example.new_kuz.presentation.viewmodels.HomeScreenViewModel
 import com.example.new_kuz.util.RequestState
@@ -122,65 +125,63 @@ private fun HomeUi(
         ) {
             LazyColumn {
                 item {
-                    Text(text = "UnConnected")
-                }
-                item {
-                    if (state.contacts.isEmpty()) {
-                        Column(
-                            Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Logo(color = MaterialTheme.colorScheme.primary, fontSize = 50)
-                            Text(text = "Thank you For Using Kuz. There are no users to connect" +
-                                    " to at the moment.", textAlign = TextAlign.Center)
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        Text(
+                            text = "Members",
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                        )
+                        Box(modifier = Modifier
+                            .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                            .clip(CircleShape)
+                            .size(40.dp)
+                        )
+                        {
+                            Text(
+                                text = "${state.contacts.size}",
+                                style = MaterialTheme.typography.headlineSmall,
+                                textAlign = TextAlign.Center,
+                                color = Color.White,
+                                modifier = Modifier.align(Alignment.Center)
+                                )
                         }
                     }
+
+
+
                 }
 
                 items(state.contacts) { user ->
 
-                        Column {
-
-                            connectItems(
-                                image = user.imageUrl,
-                                showActive = !user.active,
-                                gender = user.gender,
-                                active = user.active,
-                                name = user.name,
-                                onChatClick = { onEvent(HomeScreenEvent.onChatClick(user)) },
-                                onConnectClick = { onEvent(HomeScreenEvent.onConnectClick(user)) }
-                            )
-                        }
-
-                }
-                item {
-                    Text(text = "Connected")
-                }
-                item {
-                    if (state.unconnected.isEmpty()) {
-                        Column(
-                            Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Logo(color = MaterialTheme.colorScheme.primary, fontSize = 50)
-                            Text(text = "Thank you For Using Kuz. Please connect to more users.",
-                                textAlign = TextAlign.Center)
-                        }
+                    Column {
+                        var icon by remember { mutableIntStateOf(0)  }
+                        connectItems(
+                            image = user.imageUrl,
+                            showActive =
+                            if (
+                                user.connectedUsers.contains(state.users.uid) &&
+                                state.connected.contains(user.uid)
+                                ) true else false,
+                            gender = user.gender,
+                            connected = if (
+                                !user.connectedUsers.contains(state.users.uid) &&
+                                state.connected.contains(user.uid)
+                            ) true else false,
+                            name = user.name,
+                            onChatClick = { onEvent(HomeScreenEvent.onChatClick(user)) },
+                            icon = icon,
+                            onConnectClick = {
+                                onEvent(HomeScreenEvent.onConnectClick(user))
+                                icon = 1
+                            }
+                        )
                     }
-                }
-                items(state.unconnected) { user ->
-
-                    connectItems(
-                        image = user.imageUrl,
-                        showActive = user.active,
-                        gender = user.gender,
-                        active = true,
-                        name = user.name,
-                        onChatClick = { onEvent(HomeScreenEvent.onChatClick(user)) },
-                        onConnectClick = { onEvent(HomeScreenEvent.onConnectClick(user)) }
-                    )
                 }
             }
         }

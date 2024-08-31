@@ -1,20 +1,19 @@
 package com.example.new_kuz.presentation.screens.appscreens.components
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,13 +25,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.new_kuz.R
-import com.example.new_kuz.presentation.screens.auth.components.isActive
+import com.example.new_kuz.presentation.screens.auth.components.isConnected
 
 @Composable
 fun connectItems(
@@ -40,15 +40,15 @@ fun connectItems(
     image: String?,
     gender: String,
     showActive: Boolean,
-    active: Boolean,
+    connected: Boolean,
     name: String,
+    icon: Int,
     onChatClick : () -> Unit,
     onConnectClick: () -> Unit
 ) {
     Row(
         modifier
             .fillMaxWidth()
-            .height(90.dp)
             .padding(2.dp)
             .clickable {
                 onChatClick()
@@ -67,14 +67,20 @@ fun connectItems(
                 contentDescription = "Profile Picture",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
             )
             Column {
                 Row {
-                    Text(text = name, fontWeight = FontWeight.SemiBold)
-                    if (showActive) {
-                        isActive(active = active)
+                    Text(
+                        text = name,
+                        fontWeight = FontWeight.SemiBold,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true,
+                        modifier = Modifier.width(70.dp)
+                    )
+                    if (!connected) {
+                        isConnected(connected = showActive)
                     }//Show is Active
                 }
                 Row {
@@ -88,16 +94,7 @@ fun connectItems(
         }
         Spacer(modifier = Modifier.weight(1f))
         if (!showActive) {
-            TextButton(onClick = onConnectClick) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "Connect",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(text = "Connect", color = MaterialTheme.colorScheme.primary)
-            }
-        } else {
-            if (!active) {
+            if (connected) {
                 Row {
                     Icon(
                         imageVector = Icons.Filled.Check,
@@ -106,7 +103,32 @@ fun connectItems(
                     )
                     Text(text = "Sent", color = Green)
                 }
+            } else {
+                connect {
+                    onConnectClick()
+                }
             }
         }
+
+
+    }
+
+    HorizontalDivider(
+        thickness = Dp.Hairline,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp)
+    )
+}
+
+@Composable
+private fun connect(onConnectClick: () -> Unit){
+    TextButton(onClick = { onConnectClick()  }) {
+        Icon(
+            imageVector = Icons.Filled.Person,
+            contentDescription = "Connect",
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(text = "Connect", color = MaterialTheme.colorScheme.primary)
     }
 }

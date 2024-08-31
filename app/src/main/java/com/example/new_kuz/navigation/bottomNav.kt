@@ -76,29 +76,35 @@ fun MultiNavigationBar(
             selectedContainerColor = colors
         )
     )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+
 
     NavigationSuiteScaffold(
         layoutType = customNavSuiteType,
         navigationSuiteItems = {
-            screens.forEachIndexed { index, item ->
-                item(
-                    selected = index == selectedItem,
-                    onClick = {
-                        selectedItem = index
-                        navController.navigate(item.route)
-                    },
-                    icon = {
-                        Icon(
-                            painterResource(id = (if (index == selectedItem) item.filledIcon else item.icon)!!),
-                            contentDescription = screens[index].route,
-                            tint = if (index == selectedItem) iconColor else MaterialTheme.colorScheme.onSecondary
-                        )
-                    },
-                    label = {
-                        Text(item.route)
-                    },
-                    colors = color,
-                )
+            if (screens.any { it.route == currentDestination?.route }) {
+                screens.forEachIndexed { index, item ->
+                    item(
+                        selected = index == selectedItem,
+                        onClick = {
+                            selectedItem = index
+                            navController.navigate(item.route)
+                        },
+                        icon = {
+                            Icon(
+                                painterResource(id = (if (index == selectedItem) item.filledIcon else item.icon)!!),
+                                contentDescription = screens[index].route,
+                                tint = if (index == selectedItem) iconColor else MaterialTheme.colorScheme.onSecondary
+                            )
+                        },
+                        label = {
+                            Text(item.route)
+                        },
+                        colors = color,
+                    )
+                }
             }
         }
     ) {

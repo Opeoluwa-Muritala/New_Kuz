@@ -19,19 +19,8 @@ import com.example.new_kuz.presentation.viewmodels.DataViewmodel
 fun Home( navController: NavHostController = rememberNavController()) {
         val viewmodel: DataViewmodel = hiltViewModel()
         viewmodel.currentUser
-        val screens = listOf(
-                inAppNav.home.route,
-                inAppNav.chat.route,
-                inAppNav.settings.route
-        )
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
 
-        if (screens.any { it == currentDestination?.route }) {
-                MultiNavigationBar(navController = navController){
-                        AppNav(navController)
-                }
-        } else {
+        MultiNavigationBar(navController = navController) {
                 AppNav(navController)
         }
 }

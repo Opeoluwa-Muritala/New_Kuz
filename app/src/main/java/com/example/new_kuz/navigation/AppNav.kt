@@ -17,6 +17,7 @@ import androidx.navigation.toRoute
 import com.example.new_kuz.R
 import com.example.new_kuz.domain.modules.Contact
 import com.example.new_kuz.domain.modules.Users
+import com.example.new_kuz.domain.modules.inAppNav
 import com.example.new_kuz.domain.modules.inAppNav.about
 import com.example.new_kuz.domain.modules.inAppNav.chat
 import com.example.new_kuz.domain.modules.inAppNav.home
@@ -24,6 +25,7 @@ import com.example.new_kuz.domain.modules.inAppNav.message
 import com.example.new_kuz.domain.modules.inAppNav.settings
 import com.example.new_kuz.presentation.screens.appscreens.chat.ChatNavigation
 import com.example.new_kuz.presentation.screens.appscreens.chat.ContactNavigation
+import com.example.new_kuz.presentation.screens.appscreens.chat.archived.ArchiveNavigation
 import com.example.new_kuz.presentation.screens.appscreens.chat.messages.MessageNavigation
 import com.example.new_kuz.presentation.screens.appscreens.home.HomeNavigation
 import com.example.new_kuz.presentation.screens.appscreens.settings.AboutUiNavigation
@@ -65,6 +67,9 @@ fun AppNav(navController: NavHostController){
         }
         composable(home.route) {
             HomeNavigation(navController)
+        }
+        composable(inAppNav.archive.route) {
+            ArchiveNavigation(navController)
         }
     }
 }

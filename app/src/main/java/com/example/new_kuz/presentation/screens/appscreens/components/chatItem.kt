@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.new_kuz.presentation.screens.auth.components.isActive
@@ -40,58 +43,72 @@ fun chatItem(
     name: String,
     onChatClick : () -> Unit,
 ) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .height(90.dp)
-            .padding(2.dp)
-            .clickable {
-                onChatClick()
-            },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+    Column {
         Row(
-            modifier = Modifier.padding(5.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(2.dp)
+                .clickable {
+                    onChatClick()
+                },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Row(
+                modifier = Modifier.padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
 
-            AsyncImage(
-                model = image,
-                contentDescription = "Profile Picture",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-            )
-            Column {
-                Row {
-                    Text(text = name, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.width(5.dp))
-                    isActive(active = isActive)
-                }
-                lastMessage?.let { Text(text = it, fontWeight = FontWeight.Light,) }
-            }
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(5.dp)
-        ) {
-            Text(text = time)
-            Spacer(modifier = Modifier.height(10.dp))
-            chats?.let {
-                Box(
-                Modifier
-                    .clip(CircleShape)
-                    .size(20.dp)
-                    .background(MaterialTheme.colorScheme.primary)) {
-                Text(text = it.toString(), color = Color.White, modifier = Modifier.align(
-                    Alignment.Center))
+                AsyncImage(
+                    model = image,
+                    contentDescription = "Profile Picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                )
+                Column {
+                    Row {
+                        Text(text = name,
+                            fontWeight = FontWeight.SemiBold,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = true,
+                            modifier = Modifier.width(70.dp)
+
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        isActive(active = isActive)
+                    }
+                    lastMessage?.let { Text(text = it, fontWeight = FontWeight.Light,) }
                 }
             }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(5.dp)
+            ) {
+                Text(text = time)
+                Spacer(modifier = Modifier.height(10.dp))
+                chats?.let {
+                    Box(
+                        Modifier
+                            .clip(CircleShape)
+                            .size(10.dp)
+                            .background(MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = it.toString(), color = Color.White, modifier = Modifier.align(
+                                Alignment.Center
+                            )
+                        )
+                    }
+                }
+            }
         }
-
+        HorizontalDivider(
+            thickness = Dp.Hairline,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
+        )
     }
 }

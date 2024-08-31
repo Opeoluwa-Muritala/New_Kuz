@@ -1,5 +1,6 @@
 package com.example.new_kuz.presentation.viewmodels
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.new_kuz.database.dao.MessageDao
@@ -9,7 +10,11 @@ import com.example.new_kuz.domain.modules.Users
 import com.example.new_kuz.util.RequestState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.plcoding.globalsnackbarscompose.SnackbarAction
+import com.plcoding.globalsnackbarscompose.SnackbarController
+import com.plcoding.globalsnackbarscompose.SnackbarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -75,4 +80,14 @@ class DataViewmodel @Inject constructor(
             }
         }
     }
+}
+
+suspend fun showSnackbar(text: String, action: SnackbarAction? = null, duration: SnackbarDuration? = null) {
+    SnackbarController.sendEvent(
+        event = SnackbarEvent(
+            message = text,
+            action = action,
+            duration = duration
+        )
+    )
 }

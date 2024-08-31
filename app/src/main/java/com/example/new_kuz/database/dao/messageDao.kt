@@ -13,8 +13,8 @@ interface MessageDao {
     suspend fun saveMessage(messages: Messages)
 
     @Query("SELECT * FROM Messages WHERE sentby = :senderuid AND sentto = :recieveruid")
-    fun getMessage(senderuid: String , recieveruid: String) : Flow<List<Messages>>
+    fun getMessages(senderuid: String , recieveruid: String) : List<Messages>
 
     @Query("SELECT * FROM Messages WHERE sentby = :senderuid OR sentto = :senderuid")
-    fun getAllMessage(senderuid: String) : Flow<List<Messages>>
+    fun getAllMessage(senderuid: String) : List<Messages>
 }

@@ -2,6 +2,7 @@ package com.example.new_kuz.presentation.viewmodels
 
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.compose.material3.SnackbarDuration
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -45,62 +47,38 @@ class HomeScreenViewModel @Inject constructor(
     }
 
 
-    private fun getImage(image: String?){
-        if (image != null)
-        {
-            val imageRef = storage.getReferenceFromUrl(image.toHttpUrl().toString())
-            imageRef.getBytes(10 * 1024 * 1024).addOnSuccessListener {
-                val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-                _state.update {
-                    it.copy(
-                        image = bitmap
-                    )
-                }
-            }.addOnFailureListener {
-                // Handle any errors
-            }
-        }
-    }
     private fun getAllUserDetails() {
-        val users = mutableListOf<Users>()
-        db.collection("Users").document("${currentUser?.uid}").get()
-            .addOnSuccessListener {documentSnapshots ->
-                val userDetails = documentSnapshots.toObject(Users::class.java)
-//                getImage(userDetails?.imageUrl)
+        viewModelScope.launch {
+            val allUsers = userRepository.getAllUsers()
+            userRepository.getUser("${currentUser?.uid}").collectLatest { request ->
+                val userDetails = request.getSuccessDataOrNull()
                 _state.update {
                     it.copy(
                         userName = userDetails?.name.orEmpty(),
                         available = userDetails?.active ?: false,
+                        users = userDetails ?: Users(),
+                        connected = userDetails?.connectedUsers.orEmpty()
                     )
                 }
-                db.collection("Users").addSnapshotListener { value, error ->
-                    if (error != null) {
-                        viewModelScope.launch {
-                            _requestState.emit(RequestState.Error(error.localizedMessage.orEmpty()))
-                        }
-                        return@addSnapshotListener
+            }
+            allUsers.collectLatest { request ->
+                if (request.isSuccess()) {
+                    val users = request.getSuccessDataOrNull().orEmpty()
+                    _state.update {
+                        it.copy(
+                            contacts = users.filter { user ->
+                                state.value.users.uid != user.uid
+                            },
+                        )
                     }
-                    if (value != null) {
-                        for (document in value) {
-                            if (document.toObject(Users::class.java).uid != currentUser?.uid){
-                                users.add(document.toObject(Users::class.java))
-                            }
-                        }
-                        _state.update {
-                            it.copy(
-                                contacts = users.toList().filter {user ->
-                                    !userDetails?.connectedUsers!!.contains(user.uid)
-                                },
-                                unconnected = users.toList().filter {user ->
-                                    userDetails?.connectedUsers!!.contains(user.uid)
-                                }
-                            )
-                        }
-                    }
+                } else if (request.isLoading()) {
+                    showSnackbar("Loading...", duration = SnackbarDuration.Short)
+                } else {
+                    showSnackbar(request.getErrorData())
                 }
             }
+        }
     }
-
 
 
     fun onEvents(event: HomeScreenEvent) {

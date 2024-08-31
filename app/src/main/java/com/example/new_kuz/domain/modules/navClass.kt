@@ -37,6 +37,7 @@ sealed class inAppNav(
         fun createMessage(receiveruid: String) = "message/$receiveruid"
     }
     object about: inAppNav("about")
+    object archive: inAppNav("archive")
 }
 
 @Serializable

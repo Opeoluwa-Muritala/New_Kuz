@@ -13,6 +13,8 @@ import androidx.navigation.NavController
 import com.example.new_kuz.domain.modules.welcomeRoute
 import com.example.new_kuz.presentation.screens.auth.components.Logo
 import com.example.new_kuz.KUZTheme
+import com.example.new_kuz.navigation.Graph
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Composable
@@ -30,7 +32,9 @@ fun SplashUi(navController: NavController) {
         LaunchedEffect(key1 = Unit) {
             delay(3000)
             navController.popBackStack()
-            navController.navigate(welcomeRoute.welcome.route)
+            if (FirebaseAuth.getInstance().currentUser == null){
+                navController.navigate(welcomeRoute.welcome.route)
+            } else navController.navigate(Graph.HOME)
         }
     }
 }

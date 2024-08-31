@@ -1,6 +1,6 @@
 package com.example.new_kuz.presentation.viewmodels
 
-
+import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,22 +9,17 @@ import com.example.new_kuz.domain.repository.MessageRepository
 import com.example.new_kuz.domain.repository.UserRepository
 import com.example.new_kuz.presentation.events.ChatScreenEvent
 import com.example.new_kuz.presentation.states.ChatScreenState
-import com.example.new_kuz.util.RequestState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatScreenViewModel @Inject constructor(
+class ArchivedViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val userRepository: UserRepository,
     private val messageRepository: MessageRepository
@@ -33,7 +28,6 @@ class ChatScreenViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(ChatScreenState())
     val state = _state.asStateFlow()
-
 
     init {
         getAllUserDetails()
@@ -44,12 +38,12 @@ class ChatScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
             val allUsers = userRepository.getAllUsers()
-            userRepository.getUser("${currentUser?.uid}").collectLatest {request->
+            userRepository.getUser("${currentUser?.uid}").collectLatest { request ->
                 _state.update {
                     it.copy(
                         currentUser = request.getSuccessDataOrNull() ?: Users(),
                         connected = request.getSuccessDataOrNull()?.connectedUsers ?: emptyList(),
-                        archived =  request.getSuccessDataOrNull()?.archivedUsers ?: emptyList()
+                        archived = request.getSuccessDataOrNull()?.archivedUsers ?: emptyList()
                     )
                 }
             }
@@ -57,9 +51,12 @@ class ChatScreenViewModel @Inject constructor(
                 if (request.isSuccess()) {
                     _state.update {
                         it.copy(
-                            chats = request.getSuccessDataOrNull() ?: emptyList(),
+                            chats = request.getSuccessDataOrNull()?.filter {user->
+                                state.value.archived.contains(user.uid)
+                            } ?: emptyList(),
                         )
                     }
+
                 } else if (request.isLoading()) {
                     showSnackbar("Loading...", duration = SnackbarDuration.Short)
                 } else {
@@ -74,7 +71,7 @@ class ChatScreenViewModel @Inject constructor(
     private fun getMessages() {
         viewModelScope.launch {
             val messages = messageRepository.myMessages("${currentUser?.uid}")
-            messages.collectLatest {request ->
+            messages.collectLatest { request ->
                 if (request.isSuccess()) {
                     _state.update {
                         it.copy(
@@ -90,23 +87,10 @@ class ChatScreenViewModel @Inject constructor(
 
     }
 
-    fun onEvent(event: ChatScreenEvent){
+    fun onEvent(event: ChatScreenEvent) {
         when (event) {
-            is ChatScreenEvent.onQueryChange -> {
-                _state.update {
-                    it.copy(
-                        query = event.query,
-                        chats = state.value.chats.filter {user ->
-                            user.name.lowercase().contains(event.query.lowercase())
-                        }
-                    )
-                }
-            }
-
             is ChatScreenEvent.onChatClick -> {}
-            is ChatScreenEvent.onArchiveClick -> {}
+            else -> {}
         }
     }
-
-
 }

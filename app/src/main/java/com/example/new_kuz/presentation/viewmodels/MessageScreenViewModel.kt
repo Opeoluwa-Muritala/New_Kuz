@@ -52,7 +52,6 @@ class MessageScreenViewModel @Inject constructor(
         db.collection("Users").document("${reciever}").get()
             .addOnSuccessListener { documentSnapshots ->
                 val userDetails = documentSnapshots.toObject(Users::class.java)
-                Log.d("connected", "getCurrentUser${userDetails?.connectedUsers}")
                 _state.update {
                     it.copy(
                         receiver = userDetails
@@ -89,8 +88,6 @@ class MessageScreenViewModel @Inject constructor(
                         messages = groupedMessages
                     )
                 }
-                Log.d("messages", messages.toString())
-                Log.d("messages", value.toObjects<Messages>().toString())
             }
         }
     }

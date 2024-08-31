@@ -3,6 +3,7 @@ package com.example.new_kuz.presentation.screens.appscreens.chat.messages
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -105,7 +107,7 @@ fun MessageNavigation(
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun messageUI(
     state: MessageScreenState,
@@ -191,8 +193,7 @@ private fun messageUI(
     ) {paddingValues->
         LazyColumn(Modifier.padding(paddingValues),
             reverseLayout = true) {
-
-            items(6){
+            items(6) {
                 if (state.messages.isEmpty()) {
                     val alignment = if (it % 2 == 0) Alignment.CenterEnd else Alignment.CenterStart
                     val padding =
@@ -202,33 +203,44 @@ private fun messageUI(
                             .fillMaxWidth()
                             .padding(5.dp)
                     ) {
-                        MessageBox(
-                            isSender = it % 2 == 0,
-                            message = "",
-                            time = "",
+                        MessageCard2(
                             modifier = Modifier
                                 .padding(padding)
-                                .shimmerLoadingAnimation()
                                 .align(alignment),
                         )
                     }
                 }
             }
-            items(state.messages) {
-                val alignment=  if (it.sentby == state.currentUser) Alignment.CenterEnd else Alignment.CenterStart
-                val padding = if ((it.sentby == state.currentUser)) PaddingValues(start = 50.dp) else PaddingValues(end = 50.dp)
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)){
-                    MessageBox(
-                        isSender = it.sentby == state.currentUser,
-                        message = it.message,
-                        time = it.timeline,
-                        modifier = Modifier
-                            .padding(padding)
-                            .align(alignment),
-                        images =it.images
+            state.dates.forEach { section ->
+                ;
+                stickyHeader {
+                    Text(
+                        section,
+                        Modifier.fillMaxWidth().background(Color.LightGray).padding(8.dp)
                     )
+                }
+                items(state.messages[section]!!) {
+                    val alignment =
+                        if (it.sentby == state.currentUser) Alignment.CenterEnd else Alignment.CenterStart
+                    val padding =
+                        if ((it.sentby == state.currentUser)) PaddingValues(start = 50.dp) else PaddingValues(
+                            end = 50.dp
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                    ) {
+                        MessageBox(
+                            isSender = it.sentby == state.currentUser,
+                            message = it.message,
+                            time = it.timeline,
+                            modifier = Modifier
+                                .padding(padding)
+                                .align(alignment),
+                            images = it.images
+                        )
+                    }
                 }
             }
         }
@@ -270,6 +282,7 @@ private fun MessageTopBar(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(60.dp)
+                            .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground)
                             .clip(CircleShape)
                     )
                     Column {

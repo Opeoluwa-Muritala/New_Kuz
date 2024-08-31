@@ -59,9 +59,9 @@ class ContactCardViewModel @Inject constructor(
     }
         fun onEvents(event: ContactCardEvent) {
             when (event) {
-                ContactCardEvent.archiveContact -> TODO()
-                ContactCardEvent.blockContact -> TODO()
-                ContactCardEvent.onBackClick -> TODO()
+                ContactCardEvent.archiveContact -> {}
+                ContactCardEvent.blockContact -> {}
+                ContactCardEvent.onBackClick -> {}
             }
         }
 

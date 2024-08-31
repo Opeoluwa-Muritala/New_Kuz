@@ -3,6 +3,7 @@ package com.example.new_kuz.presentation.screens.appscreens.chat
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -175,6 +177,7 @@ private fun UserDetails(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
+                .border(Dp.Hairline, MaterialTheme.colorScheme.primary, CircleShape)
         )
         Text(
             text = name,

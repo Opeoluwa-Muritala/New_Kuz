@@ -2,6 +2,7 @@ package com.example.new_kuz.presentation.screens.appscreens.components
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.new_kuz.R
@@ -35,7 +37,7 @@ fun chatBar(
     onTextChange: (String) -> Unit,
     attachment: () -> Unit,
     send: () -> Unit,
-    images: List<Uri?>?
+    images: List<Uri?>
 ) {
     Row(
         Modifier
@@ -46,13 +48,14 @@ fun chatBar(
 
         Column {
             Row(Modifier.verticalScroll(rememberScrollState())) {
-                images?.forEach {
+                images.forEach {
                     AsyncImage(
                         model = it,
                         contentDescription = "Selected Image",
                         modifier = Modifier
                             .size(80.dp)
                             .padding(5.dp)
+                            .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground)
                             .clip(RoundedCornerShape(10)),
                         contentScale = ContentScale.Crop
                     )

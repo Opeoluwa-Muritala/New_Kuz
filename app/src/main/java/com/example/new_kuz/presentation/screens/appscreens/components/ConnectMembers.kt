@@ -1,5 +1,6 @@
 package com.example.new_kuz.presentation.screens.appscreens.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -42,7 +44,6 @@ fun connectItems(
     showActive: Boolean,
     connected: Boolean,
     name: String,
-    icon: Int,
     onChatClick : () -> Unit,
     onConnectClick: () -> Unit
 ) {
@@ -69,6 +70,7 @@ fun connectItems(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
+                    .border(Dp.Hairline, MaterialTheme.colorScheme.primary, CircleShape)
             )
             Column {
                 Row {
@@ -77,9 +79,10 @@ fun connectItems(
                         fontWeight = FontWeight.SemiBold,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = true,
-                        modifier = Modifier.width(70.dp)
+                        modifier = Modifier.width(150.dp),
+                        maxLines = 1
                     )
-                    if (!connected) {
+                    if (connected) {
                         isConnected(connected = showActive)
                     }//Show is Active
                 }
@@ -130,5 +133,19 @@ private fun connect(onConnectClick: () -> Unit){
             tint = MaterialTheme.colorScheme.primary
         )
         Text(text = "Connect", color = MaterialTheme.colorScheme.primary)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ConnectMembersPreview(){
+    connectItems(
+        image = "",
+        gender = "Male",
+        showActive = false,
+        connected = false,
+        name = "Muritala Opeoluwa",
+        onChatClick = { /*TODO*/ }) {
+
     }
 }

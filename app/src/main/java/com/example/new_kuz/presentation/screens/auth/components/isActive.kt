@@ -68,7 +68,7 @@ fun isConnected(connected: Boolean) {
         )){
         Text(
             text = if (!connected) "Pending" else "Active",
-            color = if (!connected) Color.Black else Color.White,
+            color = Color.White,
             modifier = Modifier.align(
                 Alignment.Center
             ),

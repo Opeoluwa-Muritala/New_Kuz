@@ -2,6 +2,7 @@ package com.example.new_kuz.presentation.screens.appscreens.chat.messages
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -86,8 +89,8 @@ fun MessageCard(
                     modifier = Modifier
                         .size(120.dp)
                         .padding(start = 10.dp, end = 10.dp, top = 10.dp)
-                        .shimmerLoadingAnimation()
-                        .clip(RoundedCornerShape(30)),
+                        .clip(RoundedCornerShape(30))
+                        .border(Dp.Hairline, MaterialTheme.colorScheme.primary, CircleShape),
                     contentScale = ContentScale.Fit
                 )
             }
@@ -131,20 +134,14 @@ fun MessageCard(
 @Composable
 fun MessageCard2(
     modifier: Modifier = Modifier,
-    message: String,
-    time: String,
-    color: Color,
-    images: List<String>
 ) {
 
 
     Card(
         modifier
-            .sizeIn(minHeight = 45.dp, minWidth = 80.dp, maxWidth = 100.dp, maxHeight = 60.dp)
+            .fillMaxWidth(0.7f)
+            .shimmerLoadingAnimation()
             .padding(5.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
         shape = RoundedCornerShape(30)
     ) {
     }

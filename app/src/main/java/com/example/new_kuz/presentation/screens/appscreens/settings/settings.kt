@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -311,6 +313,7 @@ fun ProfileImage(
                 model = image,
                 modifier = Modifier
                     .size(60.dp)
+                    .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground)
                     .clip(CircleShape),
                 contentDescription = "Profile Image",
                 contentScale = ContentScale.Crop

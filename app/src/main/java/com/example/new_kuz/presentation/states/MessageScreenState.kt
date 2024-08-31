@@ -15,5 +15,6 @@ data class MessageScreenState(
     val currentUser: String = "",
     val receiver: Users? = null,
     val images: List<String> = emptyList(),
-    val messages: List<Messages> = emptyList()
+    val messages: Map<String, List<Messages>>,
+    val dates: List<String> = emptyList()
 )

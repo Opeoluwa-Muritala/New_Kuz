@@ -57,7 +57,9 @@ class ChatScreenViewModel @Inject constructor(
                 if (request.isSuccess()) {
                     _state.update {
                         it.copy(
-                            chats = request.getSuccessDataOrNull() ?: emptyList(),
+                            chats = request.getSuccessDataOrNull()?.filter {
+                                !state.value.archived.contains(it.uid)
+                            }?.filter {!state.value.currentUser.blockedUsers.contains(it.uid)  } ?: emptyList(),
                         )
                     }
                 } else if (request.isLoading()) {

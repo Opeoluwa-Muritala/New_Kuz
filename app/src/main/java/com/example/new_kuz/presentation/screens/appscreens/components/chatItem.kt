@@ -3,10 +3,12 @@ package com.example.new_kuz.presentation.screens.appscreens.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -67,6 +70,7 @@ fun chatItem(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
+                        .border(Dp.Hairline, MaterialTheme.colorScheme.primary, CircleShape)
                 )
                 Column {
                     Row {
@@ -74,10 +78,10 @@ fun chatItem(
                             fontWeight = FontWeight.SemiBold,
                             overflow = TextOverflow.Ellipsis,
                             softWrap = true,
-                            modifier = Modifier.width(70.dp)
+                            maxLines = 1,
+                            modifier = Modifier.width(120.dp)
 
                         )
-                        Spacer(modifier = Modifier.width(5.dp))
                         isActive(active = isActive)
                     }
                     lastMessage?.let { Text(text = it, fontWeight = FontWeight.Light,) }
@@ -94,7 +98,8 @@ fun chatItem(
                     Box(
                         Modifier
                             .clip(CircleShape)
-                            .size(10.dp)
+                            .width(20.dp)
+                            .height(20.dp)
                             .background(MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
@@ -108,7 +113,24 @@ fun chatItem(
         }
         HorizontalDivider(
             thickness = Dp.Hairline,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp)
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatMembersPreview(){
+    chatItem(
+        image = "",
+        isActive = true,
+        time = "12:53 am",
+        chats = 1,
+        lastMessage = "Hello, World!",
+        name = "Muritala Opeoluwa  Joel 21"
+    ) {
+
     }
 }

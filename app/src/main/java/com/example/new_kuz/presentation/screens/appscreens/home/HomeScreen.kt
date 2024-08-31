@@ -3,6 +3,7 @@ package com.example.new_kuz.presentation.screens.appscreens.home
 import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -160,7 +162,6 @@ private fun HomeUi(
                 items(state.contacts) { user ->
 
                     Column {
-                        var icon by remember { mutableIntStateOf(0)  }
                         connectItems(
                             image = user.imageUrl,
                             showActive =
@@ -175,10 +176,8 @@ private fun HomeUi(
                             ) true else false,
                             name = user.name,
                             onChatClick = { onEvent(HomeScreenEvent.onChatClick(user)) },
-                            icon = icon,
                             onConnectClick = {
                                 onEvent(HomeScreenEvent.onConnectClick(user))
-                                icon = 1
                             }
                         )
                     }
@@ -236,6 +235,7 @@ private fun HomeTopAppBar(
                         modifier = Modifier
                             .size(50.dp)
                             .clip(CircleShape)
+                            .border(Dp.Hairline, MaterialTheme.colorScheme.primary, CircleShape)
                             .align(Alignment.Center)
                     )
                     Box(modifier = Modifier

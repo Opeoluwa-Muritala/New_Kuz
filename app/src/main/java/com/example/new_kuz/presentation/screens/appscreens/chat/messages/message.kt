@@ -194,7 +194,7 @@ private fun messageUI(
         LazyColumn(Modifier.padding(paddingValues),
             reverseLayout = true) {
             items(6) {
-                if (state.messages.isEmpty()) {
+                if (state.messages.isNullOrEmpty()) {
                     val alignment = if (it % 2 == 0) Alignment.CenterEnd else Alignment.CenterStart
                     val padding =
                         if ((it % 2 == 0)) PaddingValues(start = 50.dp) else PaddingValues(end = 50.dp)
@@ -212,14 +212,14 @@ private fun messageUI(
                 }
             }
             state.dates.forEach { section ->
-                ;
+
                 stickyHeader {
                     Text(
                         section,
                         Modifier.fillMaxWidth().background(Color.LightGray).padding(8.dp)
                     )
                 }
-                items(state.messages[section]!!) {
+                items(state.messages?.get(section)!!) {
                     val alignment =
                         if (it.sentby == state.currentUser) Alignment.CenterEnd else Alignment.CenterStart
                     val padding =

@@ -83,7 +83,7 @@ fun connectItems(
                         maxLines = 1
                     )
                     if (connected) {
-                        isConnected(connected = showActive)
+                        isConnected(connected = !showActive)
                     }//Show is Active
                 }
                 Row {

@@ -128,7 +128,8 @@ private fun chatUi(
             ) {
                 item {
                     if (state.archived.isNotEmpty() and (state.archived.size > 1)){
-                        ArchivedChats(onClick = { onEvent(ChatScreenEvent.onArchiveClick) }, noArchivedUsers = state.archived.size)
+                        ArchivedChats(onClick = { onEvent(ChatScreenEvent.onArchiveClick) },
+                            noArchivedUsers = state.archived.size)
                     }
                 }
                 items(state.chats) { users ->
@@ -144,16 +145,13 @@ private fun chatUi(
 
                     chatItem(
                         image = users.imageUrl ?: "",
-                        isActive = if (
-                            !users.connectedUsers.contains(state.currentUser.uid) &&
-                            state.connected.contains(users.uid)
-                        ) true else false,
+                        isActive = !users.connectedUsers.contains(state.currentUser.uid) &&
+                                !state.connected.contains(users.uid),
                         time = lastMessages?.timeline ?: "",
                         chats = null,
                         lastMessage = lastMessages?.message ?: lastMessages?.images?.firstOrNull() ?: "",
                         name = users.name,
-                        onChatClick = { onEvent(ChatScreenEvent.onChatClick(users)) }
-                    )
+                        onChatClick = { onEvent(ChatScreenEvent.onChatClick(users)) })
                 }
             }
         }

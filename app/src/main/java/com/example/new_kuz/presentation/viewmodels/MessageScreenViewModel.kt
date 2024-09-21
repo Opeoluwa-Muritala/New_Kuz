@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.Users
+import com.example.new_kuz.domain.repository.MessageRepository
 import com.example.new_kuz.presentation.events.MessageScreenEvent
 import com.example.new_kuz.presentation.states.MessageScreenState
 import com.example.new_kuz.util.RequestState
@@ -31,7 +32,8 @@ class MessageScreenViewModel @Inject constructor(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
     private val storage: FirebaseStorage,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val messageRepository: MessageRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(MessageScreenState())
     val state = _state.asStateFlow()
@@ -216,7 +218,7 @@ class MessageScreenViewModel @Inject constructor(
         val time = Calendar.getInstance(Locale.getDefault()).time
         val formattedTime = time.toInstant().toEpochMilli()
         uploadPhotos()
-        db.collection("Messages").add(
+        messageRepository.addNewMessage(
             Messages(
                 sentto = reciever!!,
                 sentby = state.value.currentUser,

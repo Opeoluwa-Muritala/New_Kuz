@@ -5,6 +5,8 @@ import com.example.new_kuz.database.dao.MessageDao
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.repository.MessageRepository
 import com.example.new_kuz.util.RequestState
+import com.example.new_kuz.util.changeMillisToDateString
+import com.example.new_kuz.util.changeMillisToTimeString
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +27,7 @@ class MessageRepositoryImpl @Inject constructor(
             val messagges: List<Messages>
             try {
                 withContext(Dispatchers.IO) {
-                    messagges = messageDao.getAllMessage(uid)
+                    messagges = messageDao.getAllSenderMessage(uid)
                 }
                 emit(RequestState.Success(messagges))
             } catch (e:Exception){
@@ -52,7 +54,9 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override fun addNewMessage(messages: Messages): Flow<RequestState<String>> {
-        TODO("Not yet implemented")
+        return flow {
+            db.collection("Messages").add(messages)
+        }
     }
 
     private fun uploadImage(imageUri: Uri?): Uri? {

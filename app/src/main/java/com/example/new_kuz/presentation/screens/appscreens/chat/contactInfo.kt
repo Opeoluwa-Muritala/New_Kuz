@@ -169,7 +169,28 @@ private fun UserDetails(
     currentUsers: Users,
     otherUsers: Users
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally,) {
+    var text  = ""
+    var remark = ""
+    var color = Color.Transparent
+
+    when(currentUsers.connectedUsers.contains(otherUsers.uid) &&
+            otherUsers.connectedUsers.contains(currentUsers.uid)){
+        false -> {
+            text = "Not Connected"
+            remark = "Not Connected"
+            color = Color.Gray
+        }
+        true -> {text = "Connected"
+            remark = "Connected on few months ago"
+            color = Color.Green
+        }
+    }
+
+    Column(
+        Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         AsyncImage(
             model = image,
             contentDescription = "",
@@ -193,8 +214,7 @@ private fun UserDetails(
         )
         Card(
             Modifier
-                .width(IntrinsicSize.Max)
-                .padding(10.dp)
+                .padding(horizontal = 30.dp, vertical = 10.dp)
                 .height(90.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White,
@@ -210,52 +230,35 @@ private fun UserDetails(
                     .fillMaxSize()
                     .padding(10.dp)
             ) {
-                if (currentUsers.connectedUsers.contains(otherUsers.uid) && otherUsers.connectedUsers.contains(currentUsers.uid)) {
+
                     Box(
                         Modifier
                             .clip(RoundedCornerShape(50))
-                            .background(Color.Green)
+                            .background(color)
                             .height(IntrinsicSize.Max)
                             .width(IntrinsicSize.Max)
                             .padding(10.dp)
                     ) {
 
                         Text(
-                            text = "Connected",
+                            text = text,
                             color = Color.White,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                } else {
-                    Box(
-                        Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(Color.Gray)
-                            .size(90.dp, 40.dp)
-                            .padding(10.dp)
-                            .height(IntrinsicSize.Max)
-                            .width(IntrinsicSize.Max)
-                    ) {
 
-                        Text(
-                            text = "Not Connected",
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                    Text(
+                        text = remark,
+                        color = Color.Black
+                    )
                 }
-//                Text(
-//                    text = "Connected on 5th Dec, 2023",
-//                    color = Color.Black
-//                )
-            }
+
 
         }
     }
-
 }
+
 
 
 @Composable

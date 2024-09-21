@@ -45,9 +45,11 @@ import com.example.new_kuz.domain.modules.inAppNav
 fun MultiNavigationBar(
     modifier: Modifier = Modifier,
     navController: NavController,
+    selected: Int,
+    select:  (Int) -> Unit,
     content: @Composable () -> Unit = {}
 ) {
-    var selectedItem by rememberSaveable { mutableIntStateOf(1) }
+    var selectedItem by rememberSaveable { mutableIntStateOf(selected) }
     val screens = listOf(
         inAppNav.home,
         inAppNav.chat,
@@ -89,6 +91,7 @@ fun MultiNavigationBar(
                     item(
                         selected = index == selectedItem,
                         onClick = {
+                            select(index)
                             selectedItem = index
                             navController.navigate(item.route)
                         },

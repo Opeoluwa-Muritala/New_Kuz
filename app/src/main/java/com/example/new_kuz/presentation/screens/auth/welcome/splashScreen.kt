@@ -9,16 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.new_kuz.domain.modules.welcomeRoute
 import com.example.new_kuz.presentation.screens.auth.components.Logo
 import com.example.new_kuz.KUZTheme
 import com.example.new_kuz.navigation.Graph
+import com.example.new_kuz.presentation.viewmodels.DataViewmodel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashUi(navController: NavController) {
+
     KUZTheme {
         Column(
             modifier = Modifier

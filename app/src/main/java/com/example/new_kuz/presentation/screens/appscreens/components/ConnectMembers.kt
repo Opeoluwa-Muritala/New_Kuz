@@ -42,6 +42,8 @@ fun connectItems(
     image: String?,
     gender: String,
     showActive: Boolean,
+    showConnect: Boolean = false,
+    requestState: Boolean = true,
     connected: Boolean,
     name: String,
     onChatClick : () -> Unit,
@@ -82,9 +84,12 @@ fun connectItems(
                         modifier = Modifier.width(150.dp),
                         maxLines = 1
                     )
-                    if (connected) {
-                        isConnected(connected = !showActive)
-                    }//Show is Active
+                    if (showConnect) {
+                        isConnected(connected = false)
+                    }
+                    if (!showConnect){
+                        isConnected(connected = true)
+                    }
                 }
                 Row {
                     Icon(
@@ -96,8 +101,8 @@ fun connectItems(
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        if (!showActive) {
-            if (connected) {
+        if (showConnect) {
+            if (!requestState) {
                 Row {
                     Icon(
                         imageVector = Icons.Filled.Check,
@@ -107,13 +112,11 @@ fun connectItems(
                     Text(text = "Sent", color = Green)
                 }
             } else {
-                connect {
-                    onConnectClick()
+                connect(
+                    onConnectClick = {})
                 }
-            }
-        }
-
-
+            // Request State is true when a request is sent for connection.
+        } // Show Connect is to decide whether to show the end part of the row
     }
 
     HorizontalDivider(
@@ -125,14 +128,17 @@ fun connectItems(
 }
 
 @Composable
-private fun connect(onConnectClick: () -> Unit){
-    TextButton(onClick = { onConnectClick()  }) {
-        Icon(
-            imageVector = Icons.Filled.Person,
-            contentDescription = "Connect",
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Text(text = "Connect", color = MaterialTheme.colorScheme.primary)
+private fun connect(
+    onConnectClick: () -> Unit){
+
+        TextButton(onClick = { onConnectClick() }) {
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Connect",
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(text = "Connect", color = MaterialTheme.colorScheme.primary)
+
     }
 }
 

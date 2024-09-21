@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -38,7 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -174,6 +177,10 @@ private fun HomeUi(
                                 !user.connectedUsers.contains(state.users.uid) &&
                                 state.connected.contains(user.uid)
                             ) true else false,
+                            showConnect = !user.connectedUsers.contains(state.users.uid) ||
+                                    !state.connected.contains(user.uid),
+                            requestState = user.connectedUsers.contains(state.users.uid) &&
+                                    !state.connected.contains(user.uid),
                             name = user.name,
                             onChatClick = { onEvent(HomeScreenEvent.onChatClick(user)) },
                             onConnectClick = {
@@ -246,7 +253,13 @@ private fun HomeTopAppBar(
                     )
                 }
 
-                Text(text = name)
+                Text(text = name,
+                        fontWeight = FontWeight.SemiBold,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = true,
+                        modifier = Modifier.width(100.dp),
+                        maxLines = 1
+                    )
             }
         },
         actions = {

@@ -43,8 +43,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -191,8 +193,7 @@ private fun messageUI(
             )
         }
     ) {paddingValues->
-        LazyColumn(Modifier.padding(paddingValues),
-            reverseLayout = true) {
+        LazyColumn(Modifier.padding(paddingValues)) {
             items(6) {
                 if (state.messages.isNullOrEmpty()) {
                     val alignment = if (it % 2 == 0) Alignment.CenterEnd else Alignment.CenterStart
@@ -212,11 +213,11 @@ private fun messageUI(
                 }
             }
             state.dates.forEach { section ->
-
-                stickyHeader {
+                item {
                     Text(
                         section,
-                        Modifier.fillMaxWidth().background(Color.LightGray).padding(8.dp)
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(8.dp)
                     )
                 }
                 items(state.messages?.get(section)!!) {
@@ -242,6 +243,7 @@ private fun messageUI(
                         )
                     }
                 }
+
             }
         }
     }
@@ -281,8 +283,8 @@ private fun MessageTopBar(
                         contentDescription = "Profile Picture",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(60.dp)
-                            .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground)
+                            .size(30.dp)
+                            .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground, CircleShape)
                             .clip(CircleShape)
                     )
                     Column {
@@ -290,7 +292,11 @@ private fun MessageTopBar(
                             Text(
                                 text = user.name,
                                 color = MaterialTheme.colorScheme.onSecondary,
-                                fontWeight = FontWeight.SemiBold
+                                overflow = TextOverflow.Ellipsis,
+                                softWrap = true,
+                                modifier = Modifier.width(100.dp),
+                                fontSize = 15.sp,
+                                maxLines = 1
                             )
                             Spacer(modifier = Modifier.width(5.dp))
                         }

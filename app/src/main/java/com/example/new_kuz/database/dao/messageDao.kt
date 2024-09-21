@@ -4,8 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.new_kuz.domain.modules.Messages
-import com.example.new_kuz.domain.modules.Users
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageDao {
@@ -16,5 +14,8 @@ interface MessageDao {
     fun getMessages(senderuid: String , recieveruid: String) : List<Messages>
 
     @Query("SELECT * FROM Messages WHERE sentby = :senderuid OR sentto = :senderuid")
-    fun getAllMessage(senderuid: String) : List<Messages>
+    fun getAllSenderMessage(senderuid: String) : List<Messages>
+
+    @Query("SELECT * FROM Messages")
+    fun getAllMessage() : List<Messages>
 }

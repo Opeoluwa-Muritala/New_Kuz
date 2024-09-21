@@ -313,7 +313,7 @@ fun ProfileImage(
                 model = image,
                 modifier = Modifier
                     .size(60.dp)
-                    .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground)
+                    .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground, CircleShape)
                     .clip(CircleShape),
                 contentDescription = "Profile Image",
                 contentScale = ContentScale.Crop

@@ -84,7 +84,8 @@ private fun ArchiveScreen(
 
                     chatItem(
                         image = users.imageUrl ?: "",
-                        isActive = users.active,
+                        isActive = !users.connectedUsers.contains(state.currentUser.uid) &&
+                                !state.connected.contains(users.uid),
                         time = lastMessages?.timeline ?: "",
                         chats = null,
                         lastMessage = lastMessages?.message ?: lastMessages?.images?.firstOrNull() ?: "",

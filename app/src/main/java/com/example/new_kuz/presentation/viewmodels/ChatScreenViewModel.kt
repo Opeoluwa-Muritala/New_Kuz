@@ -1,6 +1,7 @@
 package com.example.new_kuz.presentation.viewmodels
 
 
+import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -76,13 +78,14 @@ class ChatScreenViewModel @Inject constructor(
     private fun getMessages() {
         viewModelScope.launch {
             val messages = messageRepository.myMessages("${currentUser?.uid}")
-            messages.collectLatest {request ->
+            messages.collectLatest{request ->
                 if (request.isSuccess()) {
                     _state.update {
                         it.copy(
                             messages = request.getSuccessDataOrNull() ?: emptyList()
                         )
                     }
+                    Log.d("Messages", request.getSuccessDataOrNull().toString())
                 } else {
                     showSnackbar(request.getErrorData())
                 }

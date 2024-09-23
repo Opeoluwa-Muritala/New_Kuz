@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
@@ -33,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,7 +123,10 @@ private fun messageUI(
             onEvent(MessageScreenEvent.SelectPhoto(it))
         }
     )
-
+    val messageListState = rememberLazyListState()
+    LaunchedEffect(key1 = state.messages?.entries) {
+        messageListState.animateScrollToItem(messageListState.layoutInfo.totalItemsCount)
+    }
 
 
 
@@ -193,7 +198,7 @@ private fun messageUI(
             )
         }
     ) {paddingValues->
-        LazyColumn(Modifier.padding(paddingValues)) {
+        LazyColumn(Modifier.padding(paddingValues), state = messageListState) {
             items(6) {
                 if (state.messages.isNullOrEmpty()) {
                     val alignment = if (it % 2 == 0) Alignment.CenterEnd else Alignment.CenterStart
@@ -215,9 +220,12 @@ private fun messageUI(
             state.dates.forEach { section ->
                 item {
                     Text(
-                        section,
+                        section.replace("/", " "),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp)
+                        fontSize = 10.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     )
                 }
                 items(state.messages?.get(section)!!) {
@@ -284,7 +292,11 @@ private fun MessageTopBar(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(30.dp)
-                            .border(Dp.Hairline, MaterialTheme.colorScheme.onBackground, CircleShape)
+                            .border(
+                                Dp.Hairline,
+                                MaterialTheme.colorScheme.onBackground,
+                                CircleShape
+                            )
                             .clip(CircleShape)
                     )
                     Column {
@@ -303,7 +315,9 @@ private fun MessageTopBar(
                     }
                 }
             } else{
-                Box(modifier = Modifier.fillMaxWidth().shimmerLoadingAnimation())
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .shimmerLoadingAnimation())
             }
         } },
         actions = {

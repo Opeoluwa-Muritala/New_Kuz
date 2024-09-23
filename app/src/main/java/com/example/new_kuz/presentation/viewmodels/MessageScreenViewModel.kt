@@ -77,14 +77,15 @@ class MessageScreenViewModel @Inject constructor(
                     .filter { message -> message.sentto == reciever || message.sentby == reciever }
                     .groupBy { it.date }
                     .mapValues { entry->
-                        entry.value.sortedByDescending { it.timeline }
-                    }
+                        entry.value.sortedByDescending { it.timeline }.reversed()
+                    }.toSortedMap(reverseOrder())
                 messages
                     .filter { message -> message.sentto == user || message.sentby == user }
                     .filter { message -> message.sentto == reciever || message.sentby == reciever }
                     .forEach {
                     if (!dates.contains(it.date)){
                         dates.add(it.date)
+                        dates.sort()
                     }
                 }
 

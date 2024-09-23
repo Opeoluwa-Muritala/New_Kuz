@@ -19,16 +19,16 @@ import com.example.new_kuz.presentation.viewmodels.DataViewmodel
 fun Home( navController: NavHostController = rememberNavController()) {
         val viewmodel: DataViewmodel = hiltViewModel()
         val loadingState = viewmodel.loadingState.collectAsStateWithLifecycle().value
-        LaunchedEffect(key1 = true) {
-                when(loadingState){
-                        true -> {
-                                Log.d("Loading", "Loading...")
-                        }
-                        false -> {
-                                Log.d("Loading", "Loading Finished...")
-                        }
+
+        when(loadingState){
+                true -> {
+                        Log.d("Loading", "Loading...")
+                }
+                false -> {
+                        Log.d("Loading", "Loading Finished...")
                 }
         }
+
         val screens = listOf(
                 inAppNav.home,
                 inAppNav.chat,

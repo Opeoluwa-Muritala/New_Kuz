@@ -14,6 +14,7 @@ import com.plcoding.globalsnackbarscompose.SnackbarAction
 import com.plcoding.globalsnackbarscompose.SnackbarController
 import com.plcoding.globalsnackbarscompose.SnackbarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 
 @HiltViewModel
@@ -44,11 +46,6 @@ class DataViewmodel @Inject constructor(
         )
     var users = mutableListOf<Users>()
     val messages = mutableListOf<Messages>()
-
-    init {
-        getMessages()
-        getAllUserDetails()
-    }
 
     private fun fetchData() {
         val temp = mutableListOf<Messages>()
@@ -74,10 +71,8 @@ class DataViewmodel @Inject constructor(
                                 messageDao.saveMessage(it)
                             }
                         }
-
-
                         _loadingState.update { false }
-
+                        Log.d("Messages1", messages.toString())
                     }
                     delay(3000)
                 } catch (e: Exception) {

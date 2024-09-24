@@ -1,15 +1,16 @@
 package com.example.new_kuz.presentation.viewmodels
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.Users
 import com.example.new_kuz.domain.repository.MessageRepository
 import com.example.new_kuz.presentation.events.MessageScreenEvent
 import com.example.new_kuz.presentation.states.MessageScreenState
-import com.example.new_kuz.util.RequestState
 import com.example.new_kuz.util.changeMillisToDateString
 import com.example.new_kuz.util.changeMillisToTimeString
 import com.google.android.gms.tasks.Continuation
@@ -19,9 +20,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
@@ -36,8 +41,12 @@ class MessageScreenViewModel @Inject constructor(
     private val messageRepository: MessageRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(MessageScreenState())
-    val state = _state.asStateFlow()
-    private val reciever:String? = savedStateHandle["receiver"]
+    val state = _state.onEach { getMessages() }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(1000),
+        MessageScreenState()
+    )
+    private val reciever: String? = savedStateHandle["receiver"]
 
 
     val user = auth.currentUser?.uid
@@ -48,7 +57,7 @@ class MessageScreenViewModel @Inject constructor(
     }
 
 
-    private fun getRecieverDetails(){
+    private fun getRecieverDetails() {
         db.collection("Users").document("${reciever}").get()
             .addOnSuccessListener { documentSnapshots ->
                 val userDetails = documentSnapshots.toObject(Users::class.java)
@@ -61,33 +70,49 @@ class MessageScreenViewModel @Inject constructor(
     }
 
     private fun getMessages() {
-        val messages = mutableListOf<Messages>()
         val dates = mutableListOf<String>()
+        val messages = mutableListOf<Messages>()
 
         db.collection("Messages").addSnapshotListener { value, error ->
             if (error != null) {
                 return@addSnapshotListener
             }
             if (value != null) {
-                for (document in value) {
-                    messages.add(document.toObject(Messages::class.java))
-                }
+                val tmp = value.toObjects(Messages::class.java)
+
+                tmp.filter { message -> message.sentto == user || message.sentby == user }
+                    .filter { message -> message.sentto == reciever || message.sentby == reciever }
+                    .forEach {
+                        val tmpimg = mutableListOf<String>()
+                        if (it.images.isNotEmpty()){
+                            runBlocking(Dispatchers.IO){
+                                it.images.forEach {imgUrl ->
+                                    val ref = storage.reference.child(imgUrl)
+                                    val ONE_MEGABYTES: Long = 1024 *1024
+                                    ref.getBytes(ONE_MEGABYTES).addOnSuccessListener {
+                                        tmpimg.add(BitmapFactory.decodeByteArray(it, 0, it.size).toString())
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!dates.contains(it.date)) {
+                            dates.add(it.date)
+                            dates.sort()
+                        }
+                        messages.add(
+                            it.copy(
+                                images = tmpimg
+                            )
+                        )
+                    }
                 val groupedMessages = messages
                     .filter { message -> message.sentto == user || message.sentby == user }
                     .filter { message -> message.sentto == reciever || message.sentby == reciever }
                     .groupBy { it.date }
-                    .mapValues { entry->
+                    .mapValues { entry ->
                         entry.value.sortedByDescending { it.timeline }.reversed()
                     }.toSortedMap(reverseOrder())
-                messages
-                    .filter { message -> message.sentto == user || message.sentby == user }
-                    .filter { message -> message.sentto == reciever || message.sentby == reciever }
-                    .forEach {
-                    if (!dates.contains(it.date)){
-                        dates.add(it.date)
-                        dates.sort()
-                    }
-                }
 
                 _state.update {
                     it.copy(
@@ -96,9 +121,12 @@ class MessageScreenViewModel @Inject constructor(
                         dates = dates
                     )
                 }
+
+
             }
         }
     }
+
 
     fun onEvent(event: MessageScreenEvent) {
         when (event) {
@@ -199,6 +227,7 @@ class MessageScreenViewModel @Inject constructor(
                 )
             }
     }
+
     private fun blockContact() {
         val tmpData = mutableListOf<String>()
         db.collection("Users").document(user!!).get()
@@ -219,7 +248,7 @@ class MessageScreenViewModel @Inject constructor(
         val time = Calendar.getInstance(Locale.getDefault()).time
         val formattedTime = time.toInstant().toEpochMilli()
         uploadPhotos()
-        messageRepository.addNewMessage(
+        db.collection("Messages").add(
             Messages(
                 sentto = reciever!!,
                 sentby = state.value.currentUser,

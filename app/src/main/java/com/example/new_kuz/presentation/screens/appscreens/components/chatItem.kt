@@ -82,7 +82,7 @@ fun chatItem(
                             modifier = Modifier.width(120.dp)
 
                         )
-                        isActive(active = isActive)
+                        isActive(active = !isActive)
                     }
                     lastMessage?.let { Text(text = it, fontWeight = FontWeight.Light,) }
                 }

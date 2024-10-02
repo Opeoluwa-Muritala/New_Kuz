@@ -121,8 +121,6 @@ class MessageScreenViewModel @Inject constructor(
                         dates = dates
                     )
                 }
-
-
             }
         }
     }

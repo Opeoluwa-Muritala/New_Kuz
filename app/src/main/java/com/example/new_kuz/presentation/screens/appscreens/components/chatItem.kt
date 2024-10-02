@@ -1,14 +1,11 @@
 package com.example.new_kuz.presentation.screens.appscreens.components
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +32,7 @@ import coil.compose.AsyncImage
 import com.example.new_kuz.presentation.screens.auth.components.isActive
 
 @Composable
-fun chatItem(
+fun ChatItem(
     modifier: Modifier = Modifier,
     image: String,
     isActive: Boolean,
@@ -123,7 +119,7 @@ fun chatItem(
 @Preview(showBackground = true)
 @Composable
 fun ChatMembersPreview(){
-    chatItem(
+    ChatItem(
         image = "",
         isActive = true,
         time = "12:53 am",

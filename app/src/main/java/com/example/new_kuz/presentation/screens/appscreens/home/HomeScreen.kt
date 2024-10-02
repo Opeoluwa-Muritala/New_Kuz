@@ -28,10 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +46,7 @@ import coil.compose.AsyncImage
 import com.example.new_kuz.R
 import com.example.new_kuz.domain.modules.inAppNav
 import com.example.new_kuz.presentation.events.HomeScreenEvent
-import com.example.new_kuz.presentation.screens.appscreens.components.connectItems
+import com.example.new_kuz.presentation.screens.appscreens.components.ConnectItems
 import com.example.new_kuz.presentation.screens.appscreens.components.roundedSearchBar
 import com.example.new_kuz.presentation.states.HomeScreenState
 import com.example.new_kuz.presentation.viewmodels.HomeScreenViewModel
@@ -165,7 +161,7 @@ private fun HomeUi(
                 items(state.contacts) { user ->
 
                     Column {
-                        connectItems(
+                        ConnectItems(
                             image = user.imageUrl,
                             showActive =
                             if (

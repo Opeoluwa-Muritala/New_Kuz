@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.Users
-import com.example.new_kuz.domain.repository.MessageRepository
 import com.example.new_kuz.presentation.events.MessageScreenEvent
 import com.example.new_kuz.presentation.states.MessageScreenState
 import com.example.new_kuz.util.changeMillisToDateString
@@ -35,10 +34,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MessageScreenViewModel @Inject constructor(
     private val db: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    auth: FirebaseAuth,
     private val storage: FirebaseStorage,
-    private val savedStateHandle: SavedStateHandle,
-    private val messageRepository: MessageRepository
+    savedStateHandle: SavedStateHandle,
 ): ViewModel() {
     private val _state = MutableStateFlow(MessageScreenState())
     val state = _state.onEach { getMessages() }.stateIn(
@@ -46,7 +44,7 @@ class MessageScreenViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(1000),
         MessageScreenState()
     )
-    private val reciever: String? = savedStateHandle["receiver"]
+    private val receiver: String? = savedStateHandle["receiver"]
 
 
     val user = auth.currentUser?.uid
@@ -58,7 +56,7 @@ class MessageScreenViewModel @Inject constructor(
 
 
     private fun getRecieverDetails() {
-        db.collection("Users").document("${reciever}").get()
+        db.collection("Users").document("${receiver}").get()
             .addOnSuccessListener { documentSnapshots ->
                 val userDetails = documentSnapshots.toObject(Users::class.java)
                 _state.update {
@@ -81,7 +79,7 @@ class MessageScreenViewModel @Inject constructor(
                 val tmp = value.toObjects(Messages::class.java)
 
                 tmp.filter { message -> message.sentto == user || message.sentby == user }
-                    .filter { message -> message.sentto == reciever || message.sentby == reciever }
+                    .filter { message -> message.sentto == receiver || message.sentby == receiver }
                     .forEach {
                         val tmpimg = mutableListOf<String>()
                         if (it.images.isNotEmpty()){
@@ -108,7 +106,7 @@ class MessageScreenViewModel @Inject constructor(
                     }
                 val groupedMessages = messages
                     .filter { message -> message.sentto == user || message.sentby == user }
-                    .filter { message -> message.sentto == reciever || message.sentby == reciever }
+                    .filter { message -> message.sentto == receiver || message.sentby == receiver }
                     .groupBy { it.date }
                     .mapValues { entry ->
                         entry.value.sortedByDescending { it.timeline }.reversed()
@@ -248,7 +246,7 @@ class MessageScreenViewModel @Inject constructor(
         uploadPhotos()
         db.collection("Messages").add(
             Messages(
-                sentto = reciever!!,
+                sentto = receiver!!,
                 sentby = state.value.currentUser,
                 message = state.value.message,
                 date = formattedTime.changeMillisToDateString(),

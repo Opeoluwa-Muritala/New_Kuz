@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,9 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,10 +28,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +37,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,17 +46,11 @@ import com.example.new_kuz.R
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.inAppNav
 import com.example.new_kuz.domain.modules.inAppNav.message
-import com.example.new_kuz.navigation.User
 import com.example.new_kuz.presentation.events.ChatScreenEvent
-import com.example.new_kuz.presentation.screens.appscreens.components.chatItem
+import com.example.new_kuz.presentation.screens.appscreens.components.ChatItem
 import com.example.new_kuz.presentation.screens.appscreens.components.roundedSearchBar
-import com.example.new_kuz.presentation.screens.auth.components.Logo
 import com.example.new_kuz.presentation.states.ChatScreenState
 import com.example.new_kuz.presentation.viewmodels.ChatScreenViewModel
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -75,7 +60,7 @@ fun ChatNavigation(
     val viewModel: ChatScreenViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
 
-    chatUi(
+    ChatUi(
         state= state,
         onEvent = {chatEvent ->
             when (chatEvent){
@@ -100,7 +85,7 @@ fun ChatNavigation(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-private fun chatUi(
+private fun ChatUi(
     state: ChatScreenState,
     onEvent:(ChatScreenEvent) -> Unit
 ) {
@@ -143,7 +128,7 @@ private fun chatUi(
                         it.sentby == users.uid || it.sentto == users.uid
                     }
 
-                    chatItem(
+                    ChatItem(
                         image = users.imageUrl ?: "",
                         isActive = !users.connectedUsers.contains(state.currentUser.uid) &&
                                 !state.connected.contains(users.uid) && users.active,
@@ -159,7 +144,7 @@ private fun chatUi(
 }
 
 @Composable
-private fun ArchivedChats(modifier: Modifier = Modifier, onClick: () -> Unit, noArchivedUsers: Int? = null) {
+private fun ArchivedChats(onClick: () -> Unit, noArchivedUsers: Int? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

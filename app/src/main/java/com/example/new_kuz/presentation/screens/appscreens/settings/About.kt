@@ -37,7 +37,7 @@ fun AboutUiNavigation(navController: NavController){
     AboutUi(
         version = "1.0",
         onBackPressed = { navController.navigateUp() },
-        onHelpClick = { /*TODO*/ },
+        onHelpClick = {  },
         onTermsClick = {}
     )
 }

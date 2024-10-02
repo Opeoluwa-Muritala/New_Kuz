@@ -57,19 +57,19 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun getArchived(users: List<String>): Flow<RequestState<List<Users>>> {
-        TODO("Not yet implemented")
+        return flow {  }
     }
 
     override fun getBlocked(users: List<String>): Flow<RequestState<List<Users>>> {
-        TODO("Not yet implemented")
+        return flow {  }
     }
 
     override fun getConnected(users: List<String>): Flow<RequestState<List<Users>>> {
-        TODO("Not yet implemented")
+        return flow {  }
     }
 
     override fun getNotConnected(users: List<String>): Flow<RequestState<List<Users>>> {
-        TODO("Not yet implemented")
+        return flow {  }
     }
 
     override fun updateUser(user: Users): Flow<RequestState<String>> {

@@ -37,7 +37,7 @@ import com.example.new_kuz.R
 import com.example.new_kuz.presentation.screens.auth.components.isConnected
 
 @Composable
-fun connectItems(
+fun ConnectItems(
     modifier: Modifier = Modifier,
     image: String?,
     gender: String,
@@ -112,7 +112,7 @@ fun connectItems(
                     Text(text = "Sent", color = Green)
                 }
             } else {
-                connect(
+                Connect(
                     onConnectClick = {})
                 }
             // Request State is true when a request is sent for connection.
@@ -128,7 +128,7 @@ fun connectItems(
 }
 
 @Composable
-private fun connect(
+private fun Connect(
     onConnectClick: () -> Unit){
 
         TextButton(onClick = { onConnectClick() }) {
@@ -145,13 +145,13 @@ private fun connect(
 @Preview(showBackground = true)
 @Composable
 fun ConnectMembersPreview(){
-    connectItems(
+    ConnectItems(
         image = "",
         gender = "Male",
         showActive = false,
         connected = false,
         name = "Muritala Opeoluwa",
-        onChatClick = { /*TODO*/ }) {
+        onChatClick = {  }) {
 
     }
 }

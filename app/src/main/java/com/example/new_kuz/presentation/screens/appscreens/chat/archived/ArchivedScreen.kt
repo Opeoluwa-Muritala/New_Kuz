@@ -1,36 +1,24 @@
 package com.example.new_kuz.presentation.screens.appscreens.chat.archived
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.new_kuz.domain.modules.Messages
 import com.example.new_kuz.domain.modules.inAppNav.message
 import com.example.new_kuz.presentation.events.ChatScreenEvent
-import com.example.new_kuz.presentation.screens.appscreens.components.chatItem
-import com.example.new_kuz.presentation.screens.auth.components.Logo
+import com.example.new_kuz.presentation.screens.appscreens.components.ChatItem
 import com.example.new_kuz.presentation.states.ChatScreenState
 import com.example.new_kuz.presentation.viewmodels.ArchivedViewModel
-import com.example.new_kuz.presentation.viewmodels.ChatScreenViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -82,13 +70,13 @@ private fun ArchiveScreen(
                         it.sentby == users.uid || it.sentto == users.uid
                     }.lastOrNull()
 
-                    chatItem(
+                    ChatItem(
                         image = users.imageUrl ?: "",
                         isActive = !users.connectedUsers.contains(state.currentUser.uid) &&
                                 !state.connected.contains(users.uid),
                         time = lastMessages?.timeline ?: "",
                         chats = null,
-                        lastMessage = lastMessages?.message ?: lastMessages?.images?.firstOrNull() ?: "",
+                        lastMessage = lastMessages?.message ?:  "",
                         name = users.name,
                         onChatClick = { onEvent(ChatScreenEvent.onChatClick(users)) }
                     )

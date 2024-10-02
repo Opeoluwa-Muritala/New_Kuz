@@ -139,17 +139,17 @@ private fun chatUi(
                         sentby = "",
                         sentto = "",
                         images = emptyList()
-                    ) else state.messages.filter {
+                    ) else state.messages.lastOrNull {
                         it.sentby == users.uid || it.sentto == users.uid
-                    }.lastOrNull()
+                    }
 
                     chatItem(
                         image = users.imageUrl ?: "",
                         isActive = !users.connectedUsers.contains(state.currentUser.uid) &&
-                                !state.connected.contains(users.uid),
+                                !state.connected.contains(users.uid) && users.active,
                         time = lastMessages?.timeline ?: "",
                         chats = null,
-                        lastMessage = lastMessages?.message ?: lastMessages?.images?.firstOrNull() ?: "",
+                        lastMessage = lastMessages?.message ?: "",
                         name = users.name,
                         onChatClick = { onEvent(ChatScreenEvent.onChatClick(users)) })
                 }

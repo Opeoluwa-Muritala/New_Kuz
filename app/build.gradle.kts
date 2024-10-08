@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.country.code.picker)
     implementation(libs.otp.textfield)
     implementation(libs.coil.kt)
+    implementation(libs.app.write)
     implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.dagger.hilt.android)

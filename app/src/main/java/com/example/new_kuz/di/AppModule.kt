@@ -1,5 +1,6 @@
 package com.example.new_kuz.di
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -26,5 +27,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+
+//    @Provides
+//    @Singleton
+//    fun providesAppwriteClient(context: Context): Client = Client(context))
 
 }

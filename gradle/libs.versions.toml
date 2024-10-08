@@ -27,6 +27,7 @@ room = "2.6.1"
 kspVersion = "2.0.20-1.0.24"
 firebaseFirestore = "25.1.0"
 firebaseStorage = "21.0.0"
+appWrite = "6.0.0"
 
 
 [libraries]
@@ -65,6 +66,7 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage", v
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+app-write = {module = "io.appwrite:sdk-for-android",version.ref = "appWrite"}
 
 
 [plugins]

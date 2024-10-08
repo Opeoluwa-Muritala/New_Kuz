@@ -13,6 +13,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+//            val client = Client(context)
+//                .setEndpoint("https://cloud.appwrite.io/v1")
+//                .setProject("66fd1bff000c6d5f9c7f")
+//                .setSelfSigned(status = true)
             KUZTheme {
                 MainNavigation()
             }
